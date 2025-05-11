@@ -1,0 +1,6 @@
+fastapi==0.115.12
+uvicorn==0.34.2
+pydantic==2.11.4
+starlette==0.46.2
+crawl4ai==0.6.2
+playwright==1.52.0

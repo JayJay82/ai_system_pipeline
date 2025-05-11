@@ -1,0 +1,5 @@
+llama-index
+qdrant-client
+requests
+openai
+python-dotenv

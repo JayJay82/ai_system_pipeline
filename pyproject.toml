@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "ai_system_pipeline"
+version = "0.1.0"
+description = "Monorepo contenente crawler e ingestor"
+authors = ["Tuo Nome <tuo@email>"]
+packages = [
+  { include = "crawler" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+fastapi = { version = "^0.115", optional = true }
+uvicorn = { version = "^0.34.2", optional = true }
+crawl4ai = { version = "^0.6.2", optional = true }
+playwright = { version = "^1.52.0", optional = true }
+starlette = { version = "^0.46.2", optional = true }
+pydantic = { version = "^2.11.4", optional = true }
+
+llama-index    = { version = "0.10.3", optional = true }
+qdrant-client  = { version = "^1.14.2", optional = true }
+requests       = { version = "^2.32.3", optional = true }
+openai         = { version = "^1.78.0", optional = true }
+python-dotenv  = { version = "^1.1.0", optional = true }
+llama-index-vector-stores-qdrant = { version = ">=0.2.15,<0.3", optional = true }
+
+
+
+[tool.poetry.extras]
+crawler   = ["fastapi", "uvicorn", "crawl4ai", "playwright", "starlette","pydantic"]
+ingestor = [
+  "llama-index",
+  "llama-index-vector-stores-qdrant",
+  "qdrant-client",
+  "requests",
+  "openai",
+  "python-dotenv"
+]
+
+[tool.poetry.scripts]
+
+run-ingestor = "ingestor.main:main"
+start-crawler = "crawler.start_crawler:main"
+
+[tool.poetry.group.ingestor.dependencies]
+llama-index-vector-stores-qdrant = ">=0.2.15,<0.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
