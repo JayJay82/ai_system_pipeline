@@ -42,6 +42,7 @@ ingestor = [
 
 run-ingestor = "ingestor.main:main"
 start-crawler = "crawler.start_crawler:main"
+retrieve = "retriever.main:main"
 
 [tool.poetry.group.ingestor.dependencies]
 llama-index-vector-stores-qdrant = ">=0.2.15,<0.3"
