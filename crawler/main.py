@@ -10,6 +10,11 @@ from starlette.responses import StreamingResponse
 from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
 from crawl4ai.deep_crawling import BFSDeepCrawlStrategy
 
+# libreria per HTML → Markdown
+from markdownify import markdownify as md
+# libreria per manipolare l'HTML
+from bs4 import BeautifulSoup
+
 app = FastAPI(title="Crawler API")
 
 
@@ -25,6 +30,7 @@ async def crawl_generator(
     timeout:   int
 ) -> AsyncGenerator[bytes, None]:
     yield f"# Risultati di crawl di {url}\n\n".encode()
+
     run_config = CrawlerRunConfig(
         deep_crawl_strategy=BFSDeepCrawlStrategy(
             max_depth=max_depth,
@@ -32,19 +38,33 @@ async def crawl_generator(
         ),
         stream=False
     )
+
     start = time.perf_counter()
     async with AsyncWebCrawler(timeout=timeout) as crawler:
         results = await crawler.arun(url=url, config=run_config)
 
     for res in results:
+        # prendi cleaned_html (senza script/stili) o html grezzo
+        raw_html = res.cleaned_html or res.html
+
+        # ---- RIMUOVI TAG IMG, SVG, etc. ----
+        soup = BeautifulSoup(raw_html, "html.parser")
+        for tag in soup.find_all(["img", "svg", "picture", "figure"]):
+            tag.decompose()
+        cleaned_html = str(soup)
+        # ------------------------------------
+
+        # converti l'HTML “depurato” in Markdown
+        cleaned_md = md(cleaned_html, heading_style="ATX").strip()
+
         block = (
             f"## {res.url}\n\n"
-            f"{(res.markdown if res.success else res.error_message)}\n\n"
+            f"{cleaned_md}\n\n"
         )
         yield block.encode()
 
     duration = time.perf_counter() - start
-    yield f"**Pagine: {len(results)}, Tempo: {duration:.2f}s**".encode()
+    yield f"**Pagine crawlate**: {len(results)} • **Tempo**: {duration:.2f}s\n".encode()
 
 
 @app.post("/crawl")
