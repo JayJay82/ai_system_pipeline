@@ -127,7 +127,7 @@ def main() -> None:
 
     # 3️⃣  Call crawler API (markdown) ----------------------------------
     crawl_api = os.getenv("CRAWLER_API_URL", "http://localhost:8000/crawl")
-    site_url = os.getenv("CRAWL_SITE_URL", "https://www.esempio.com")
+    site_url = os.getenv("CRAWL_SITE_URL", "https://www.altermaind.com")
     depth = int(os.getenv("CRAWL_DEPTH", 3))
     timeout = int(os.getenv("CRAWL_TIMEOUT", 30))
 
